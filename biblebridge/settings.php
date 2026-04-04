@@ -346,13 +346,19 @@ function applyUpdate() {
     progress.textContent = 'Downloading and applying update — do not close this page.';
 
     var body = new FormData();
-    body.append('zip_url', window._bbZipUrl || 'https://holybible.dev/standalone-build/download.php');
+    body.append('action', 'update');
 
     fetch(baseUrl + '/update.php?token=' + encodeURIComponent(adminToken), {
         method: 'POST',
         body: body
     })
-    .then(function(r) { return r.json(); })
+    .then(function(r) {
+        if (!r.ok && r.status === 0) throw new Error('Network request failed');
+        return r.text().then(function(txt) {
+            try { return JSON.parse(txt); }
+            catch(e) { return { status: 'error', message: 'Server returned invalid response (HTTP ' + r.status + '). The update may have timed out — check if your version changed.' }; }
+        });
+    })
     .then(function(d) {
         if (d.status === 'success') {
             progress.innerHTML = '<span style="color:#16a34a;font-weight:600;">' + d.message + '</span><br>Reloading...';
@@ -366,7 +372,7 @@ function applyUpdate() {
     .catch(function(e) {
         btn.disabled = false;
         btn.textContent = 'Retry Update';
-        progress.innerHTML = '<span style="color:#b91c1c;">Network error. Check your server can reach holybible.dev. If the update started, it was rolled back automatically.</span>';
+        progress.innerHTML = '<span style="color:#b91c1c;">Network error: your server may have killed the request (timeout or WAF). Check if the version changed — if not, try manual upload.</span>';
     });
 }
 

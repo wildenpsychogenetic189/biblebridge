@@ -4,7 +4,7 @@
  * Always uses API mode. Auto-detects base URL.
  */
 
-define('BB_VERSION', '1.0.4');
+define('BB_VERSION', '1.0.5');
 
 // -----------------------------------------------------------
 // Load local config (written by setup.php on first install)

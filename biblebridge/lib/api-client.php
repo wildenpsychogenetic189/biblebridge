@@ -57,12 +57,15 @@ function bb_api_get(string $endpoint, array $params = []): ?array
 {
     global $bbInstall;
 
+    $apiKey = $bbInstall['api_key'] ?? '';
+    if (!$apiKey || $apiKey === 'bb_free_demo') return null;
+
     $url = rtrim($bbInstall['api_url'], '/') . $endpoint;
     if ($params) {
         $url .= '?' . http_build_query($params);
     }
 
-    $headers = "X-API-Key: {$bbInstall['api_key']}\r\nAccept: application/json\r\n";
+    $headers = "X-API-Key: {$bbInstall['api_key']}\r\nAccept: application/json\r\nX-BB-Client: standalone\r\n";
 
     // Only send human token for real browser requests — bots get served but don't burn quota
     if (bb_is_human_request()) {
