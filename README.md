@@ -1,5 +1,7 @@
 # BibleBridge
 
+[![Semgrep](https://github.com/ZeroCoolZiemer/biblebridge/actions/workflows/semgrep.yml/badge.svg)](https://github.com/ZeroCoolZiemer/biblebridge/actions/workflows/semgrep.yml)
+
 A complete Bible website in one small PHP upload.
 
 Try it risk-free in under a minute. Upload the zip, visit `/setup`, type a name, and your Bible website is live. If it's not for you, delete the folder — nothing changes. Works on standard shared hosting with PHP 7.4+.
