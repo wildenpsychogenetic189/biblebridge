@@ -28,8 +28,16 @@ if (!empty($GLOBALS['bb_api_rate_limited'])) {
 }
 
 if (!$data || ($data['status'] ?? '') !== 'success') {
+    // Safe: Content-Type is application/json (line 8), json_encode properly escapes
+    // all values including any reference reflected in $data, and the response is not
+    // rendered as HTML by browsers. $data is the structured API response, not raw
+    // request reflection.
+    // nosemgrep: php.lang.security.injection.echoed-request.echoed-request
     echo json_encode($data ?: ['status' => 'error', 'message' => 'Could not load context.']);
     exit;
 }
 
+// Safe: same rationale as above — json_encode inside an application/json response
+// cannot produce HTML execution context regardless of what flows into $data.
+// nosemgrep: php.lang.security.injection.echoed-request.echoed-request
 echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
