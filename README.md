@@ -19,6 +19,10 @@ Beautiful typography, cross-references, topics, and reading plans in one lightwe
 
 94–99 mobile Lighthouse on real chapter pages across US, Europe, Asia, and Australia.
 
+[![Interactive map of 95 Bible topics connected by the verses they share](./topic-map.png)](https://holybible.dev/topics/map)
+
+95 topics connected by the verses they share — structural doctrine, Tier A study themes, and Tier B pastoral care. [Open the interactive map →](https://holybible.dev/topics/map)
+
 ---
 
 Perfect for church websites, ministries, Christian blogs, Bible study apps, and any PHP site that needs a full Bible reader without rebuilding scripture infrastructure.
