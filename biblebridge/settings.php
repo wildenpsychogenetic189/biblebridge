@@ -209,6 +209,24 @@ $pageTitle = 'Settings — ' . htmlspecialchars($siteName);
         <div id="update-area"></div>
     </div>
 
+    <!-- Maintenance (rollback + repair) -->
+    <div class="settings-section" id="maintenance-section">
+        <div class="settings-section-title">Maintenance</div>
+
+        <!-- Phase B: rollback to previous version -->
+        <div id="maintenance-area">
+            <div class="update-current" style="color:var(--text-muted);">Checking restore availability&hellip;</div>
+        </div>
+
+        <!-- Phase C: repair current version (always available) -->
+        <div id="repair-area" style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border-light);">
+            <div class="update-current">Re-download the current version and replace install files. Fixes local file corruption without changing your version.</div>
+            <button type="button" class="btn-action btn-outline" id="btn-do-repair" onclick="applyRepair()">Repair install</button>
+            <div class="update-progress" id="repair-progress"></div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem;">Your settings and reading progress are preserved. Your version will not change.</div>
+        </div>
+    </div>
+
     <!-- Today's Usage -->
     <div class="settings-section">
         <div class="settings-section-title">Today's Usage</div>
@@ -437,6 +455,212 @@ function claimRedirect(page) {
     })
     .catch(function() {
         window.open('https://holybible.dev/' + page, '_blank');
+    });
+}
+
+// --- Maintenance: rollback status check on page load ---
+(function() {
+    var area = document.getElementById('maintenance-area');
+    if (!area) return;
+
+    fetch(baseUrl + '/update.php?action=rollback_status&token=' + encodeURIComponent(adminToken))
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            if (!d || d.status !== 'success') {
+                renderDisabled(area, 'Restore info unavailable.');
+                return;
+            }
+            if (d.available) {
+                renderAvailable(area, d);
+            } else {
+                renderDisabled(area, d.message || 'Restore not available.');
+            }
+        })
+        .catch(function() {
+            renderDisabled(area, 'Could not check restore availability.');
+        });
+
+    function renderAvailable(container, d) {
+        container.innerHTML = '';
+
+        var line = document.createElement('div');
+        line.className = 'update-current';
+        line.appendChild(document.createTextNode('Restore to '));
+        var strong = document.createElement('strong');
+        strong.textContent = 'v' + d.backup_version;
+        line.appendChild(strong);
+        line.appendChild(document.createTextNode(' (backed up ' + d.backup_time + ')'));
+
+        var btn = document.createElement('button');
+        btn.className = 'btn-action btn-outline';
+        btn.id = 'btn-do-rollback';
+        btn.type = 'button';
+        btn.textContent = 'Restore previous version';
+        btn.onclick = function() {
+            applyRollback(d.backup_version, d.current_version, d.backup_time);
+        };
+
+        var progress = document.createElement('div');
+        progress.className = 'update-progress';
+        progress.id = 'rollback-progress';
+
+        var helper = document.createElement('div');
+        helper.style.fontSize = '0.75rem';
+        helper.style.color = 'var(--text-muted)';
+        helper.style.marginTop = '0.5rem';
+        helper.textContent = 'Your settings and reading progress are preserved. A safety snapshot is kept so you can undo.';
+
+        container.appendChild(line);
+        container.appendChild(btn);
+        container.appendChild(progress);
+        container.appendChild(helper);
+    }
+
+    function renderDisabled(container, reasonText) {
+        container.innerHTML = '';
+
+        var line = document.createElement('div');
+        line.className = 'update-current';
+        line.style.color = 'var(--text-muted)';
+        line.textContent = reasonText;
+
+        var btn = document.createElement('button');
+        btn.className = 'btn-action btn-outline';
+        btn.type = 'button';
+        btn.textContent = 'Restore previous version';
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+
+        container.appendChild(line);
+        container.appendChild(btn);
+    }
+})();
+
+// Global — called from the Repair button onclick handler in the Maintenance section.
+function applyRepair() {
+    var msg = 'Repair install?\n\n'
+            + 'This will re-download v' + bbVersion + ' and replace your install files.\n\n'
+            + 'Your version will not change.\n'
+            + 'Your settings and reading progress will be preserved.\n\n'
+            + 'Use this if files on disk are corrupt or missing — not to downgrade.';
+    if (!confirm(msg)) return;
+
+    var btn = document.getElementById('btn-do-repair');
+    var progress = document.getElementById('repair-progress');
+    if (btn) { btn.disabled = true; btn.textContent = 'Repairing...'; }
+    if (progress) { progress.textContent = 'Re-downloading and replacing install files — do not close this page.'; }
+
+    var body = new FormData();
+    body.append('action', 'repair');
+
+    fetch(baseUrl + '/update.php?token=' + encodeURIComponent(adminToken), {
+        method: 'POST',
+        body: body
+    })
+    .then(function(r) {
+        return r.text().then(function(txt) {
+            try { return JSON.parse(txt); }
+            catch (e) { return { status: 'error', message: 'Server returned invalid response (HTTP ' + r.status + ').' }; }
+        });
+    })
+    .then(function(d) {
+        if (d && d.status === 'success') {
+            if (progress) {
+                progress.innerHTML = '';
+                var ok = document.createElement('span');
+                ok.style.color = '#16a34a';
+                ok.style.fontWeight = '600';
+                ok.textContent = d.message || 'Repaired.';
+                progress.appendChild(ok);
+                progress.appendChild(document.createElement('br'));
+                progress.appendChild(document.createTextNode('Reloading...'));
+            }
+            setTimeout(function() { location.reload(); }, 1500);
+        } else {
+            if (btn) { btn.disabled = false; btn.textContent = 'Retry Repair'; }
+            if (progress) {
+                progress.innerHTML = '';
+                var err = document.createElement('span');
+                err.style.color = '#b91c1c';
+                err.textContent = (d && d.message) || 'Repair failed.';
+                progress.appendChild(err);
+            }
+        }
+    })
+    .catch(function() {
+        if (btn) { btn.disabled = false; btn.textContent = 'Retry Repair'; }
+        if (progress) {
+            progress.innerHTML = '';
+            var err = document.createElement('span');
+            err.style.color = '#b91c1c';
+            err.textContent = 'Network error. Try again or check server logs.';
+            progress.appendChild(err);
+        }
+    });
+}
+
+// Global — called from the Maintenance button onclick handler set up above.
+function applyRollback(targetVersion, currentVersion, backupTime) {
+    var msg = 'Restore previous version?\n\n'
+            + 'Current:  v' + currentVersion + '\n'
+            + 'Restore:  v' + targetVersion + ' (from ' + backupTime + ')\n\n'
+            + 'This will replace the current install with the backup.\n'
+            + 'Your settings and reading progress will be preserved.\n'
+            + 'A safety snapshot of the current version will be kept so you can undo.';
+    if (!confirm(msg)) return;
+
+    var btn = document.getElementById('btn-do-rollback');
+    var progress = document.getElementById('rollback-progress');
+    if (btn) { btn.disabled = true; btn.textContent = 'Restoring...'; }
+    if (progress) { progress.textContent = 'Restoring previous version — do not close this page.'; }
+
+    var body = new FormData();
+    body.append('action', 'rollback');
+
+    fetch(baseUrl + '/update.php?token=' + encodeURIComponent(adminToken), {
+        method: 'POST',
+        body: body
+    })
+    .then(function(r) {
+        return r.text().then(function(txt) {
+            try { return JSON.parse(txt); }
+            catch (e) { return { status: 'error', message: 'Server returned invalid response (HTTP ' + r.status + ').' }; }
+        });
+    })
+    .then(function(d) {
+        if (d && d.status === 'success') {
+            if (progress) {
+                progress.innerHTML = '';
+                var ok = document.createElement('span');
+                ok.style.color = '#16a34a';
+                ok.style.fontWeight = '600';
+                ok.textContent = d.message || 'Restored.';
+                progress.appendChild(ok);
+                progress.appendChild(document.createElement('br'));
+                progress.appendChild(document.createTextNode('Reloading...'));
+            }
+            setTimeout(function() { location.reload(); }, 1500);
+        } else {
+            if (btn) { btn.disabled = false; btn.textContent = 'Retry Restore'; }
+            if (progress) {
+                progress.innerHTML = '';
+                var err = document.createElement('span');
+                err.style.color = '#b91c1c';
+                err.textContent = (d && d.message) || 'Restore failed.';
+                progress.appendChild(err);
+            }
+        }
+    })
+    .catch(function() {
+        if (btn) { btn.disabled = false; btn.textContent = 'Retry Restore'; }
+        if (progress) {
+            progress.innerHTML = '';
+            var err = document.createElement('span');
+            err.style.color = '#b91c1c';
+            err.textContent = 'Network error. Try again or check server logs.';
+            progress.appendChild(err);
+        }
     });
 }
 </script>

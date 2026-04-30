@@ -123,7 +123,6 @@
             html += '</div>';
         }
         html += '</div>';
-        html += '<p class="te-context-hint">' + ctxWindow + ' verses before and after</p>';
         panel.innerHTML = html;
     }
 

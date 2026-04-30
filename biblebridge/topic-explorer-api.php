@@ -239,9 +239,6 @@ if (!empty($slug)) {
 
     <!-- 3. BROWSE ENTRY POINTS -->
     <section class="te-section te-section--entry">
-        <a href="<?= $bbBaseUrl ?>/read/search?q=<?= urlencode($topicName) ?>" class="te-read-link">
-            View all verses about <?= htmlspecialchars($topicName) ?> &rarr;
-        </a>
         <a href="<?= $bbBaseUrl ?>/topics" class="te-read-link te-read-link--muted">Browse all topics &rarr;</a>
     </section>
 
